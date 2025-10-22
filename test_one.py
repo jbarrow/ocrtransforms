@@ -1,7 +1,7 @@
 import formalpdf
 import sys
 
-from ocrtransforms.transforms import *
+import ocrtransforms.transforms as OT
 
 class Compose(object):
     def __init__(self, transforms):
@@ -27,21 +27,21 @@ def test_one(path):
         image = page.render()
         pipeline = Compose([
             # Geometry (very mild, keeps boxes valid)
-            RandomRotateSmall(max_degrees=2.0, p=0.30),
-            RandomShearSmall(max_shear=3.0, p=0.30),
+            OT.RandomRotateSmall(max_degrees=2.0, p=0.30),
+            OT.RandomShearSmall(max_shear=3.0, p=0.30),
 
             # Photometric / codec / optics
-            RandomBrightnessContrastGammaSharpness(p=0.70,
+            OT.RandomBrightnessContrastGammaSharpness(p=0.70,
                 brightness=(0.92, 1.08),
                 contrast=(0.90, 1.12),
                 gamma=(0.90, 1.10),
                 sharpness=(0.85, 1.20),
             ),
-            RandomGaussianBlur(p=0.15, sigma=(0.3, 1.1)),
-            RandomGaussianNoise(p=0.20, std=(3.0, 10.0)),
-            RandomJPEGCompression(p=0.20, quality=(40, 85)),
-            RandomMorphology(p=0.12),
-            RandomToGrayscale(p=0.08),
+            OT.RandomGaussianBlur(p=0.15, sigma=(0.3, 1.1)),
+            OT.RandomGaussianNoise(p=0.20, std=(3.0, 10.0)),
+            OT.RandomJPEGCompression(p=0.20, quality=(40, 85)),
+            OT.RandomMorphology(p=0.12),
+            OT.RandomToGrayscale(p=0.08),
 
         ])
         image, _ = pipeline(image, None)
