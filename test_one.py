@@ -20,6 +20,23 @@ class Compose(object):
         format_string += "\n)"
         return format_string
 
+
+
+class FilterInvalidBoxes(object):
+    def __init__(self, min_size=1):
+        self.min_size = min_size
+    def __call__(self, img, target):
+        if target and "boxes" in target and len(target["boxes"]) > 0:
+            b = target["boxes"]
+            w = (b[:,2] - b[:,0])
+            h = (b[:,3] - b[:,1])
+            keep = (w >= self.min_size) & (h >= self.min_size)
+            for k in ["boxes","labels","area","iscrowd","masks"]:
+                if k in target and isinstance(target[k], torch.Tensor):
+                    target[k] = target[k][keep]
+        return img, target
+
+
 def test_one(path):
     doc = formalpdf.open(path)
 
