@@ -1,5 +1,9 @@
 import io
 import math
+import torch
+import random
+
+import torchvision.transforms.functional as F
 from PIL import Image, ImageEnhance, ImageFilter
 
 # ---------- Geometry helpers (apply 2x3 affine to bboxes) ----------
@@ -54,7 +58,7 @@ class RandomRotateSmall(object):
         self.max_degrees = float(max_degrees)
         self.p = p
 
-    def __call__(self, img: PIL.Image.Image, target: dict):
+    def __call__(self, img: Image.Image, target: dict):
         if random.random() >= self.p:
             return img, target
 
@@ -105,7 +109,7 @@ class RandomShearSmall(object):
         self.max_shear = float(max_shear)
         self.p = p
 
-    def __call__(self, img: PIL.Image.Image, target: dict):
+    def __call__(self, img: Image.Image, target: dict):
         if random.random() >= self.p:
             return img, target
 
@@ -162,7 +166,7 @@ class RandomBrightnessContrastGammaSharpness(object):
         self.gamma = gamma
         self.sharpness = sharpness
 
-    def __call__(self, img: PIL.Image.Image, target: dict):
+    def __call__(self, img: Image.Image, target: dict):
         if random.random() >= self.p:
             return img, target
         # Brightness
@@ -187,7 +191,7 @@ class RandomGaussianBlur(object):
         self.p = p
         self.sigma = sigma
 
-    def __call__(self, img: PIL.Image.Image, target: dict):
+    def __call__(self, img: Image.Image, target: dict):
         if random.random() >= self.p:
             return img, target
         sig = random.uniform(*self.sigma)
@@ -199,7 +203,7 @@ class RandomGaussianNoise(object):
         self.p = p
         self.std = std
 
-    def __call__(self, img: PIL.Image.Image, target: dict):
+    def __call__(self, img: Image.Image, target: dict):
         if random.random() >= self.p:
             return img, target
         arr = np.array(img).astype(np.float32)
@@ -213,7 +217,7 @@ class RandomJPEGCompression(object):
         self.p = p
         self.quality = quality
 
-    def __call__(self, img: PIL.Image.Image, target: dict):
+    def __call__(self, img: Image.Image, target: dict):
         if random.random() >= self.p:
             return img, target
         q = random.randint(*self.quality)
@@ -231,7 +235,7 @@ class RandomMorphology(object):
     def __init__(self, p=0.12):
         self.p = p
 
-    def __call__(self, img: PIL.Image.Image, target: dict):
+    def __call__(self, img: Image.Image, target: dict):
         if random.random() >= self.p:
             return img, target
         # Choose op
@@ -245,7 +249,7 @@ class RandomToGrayscale(object):
     def __init__(self, p=0.1):
         self.p = p
 
-    def __call__(self, img: PIL.Image.Image, target: dict):
+    def __call__(self, img: Image.Image, target: dict):
         if random.random() >= self.p:
             return img, target
         return img.convert("L").convert("RGB"), target
